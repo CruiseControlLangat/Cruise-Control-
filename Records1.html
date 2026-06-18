@@ -102,7 +102,7 @@
         .actions-cell {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             align-items: flex-start;
         }
         .action-btn {
@@ -120,12 +120,6 @@
         }
         .action-btn:hover {
             background-color: #5a6268;
-        }
-        .action-btn.delete-btn {
-            background-color: var(--secondary-color);
-        }
-        .action-btn.delete-btn:hover {
-            background-color: #b71c1c;
         }
         
         /* Payment Ledger Styling */
@@ -213,7 +207,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyBTYM84E6TSy0Q2QUZSt9MCYn6uAiZ6HpI",
@@ -317,18 +311,15 @@
 
                     if (data.status === 'Completed') {
                         statusBadge = `<span class="badge completed">Completed</span>`;
-                        actionButtonHTML = `<span style="color:#888; font-size:0.8rem; padding-left: 5px; margin-bottom: 4px;">Trip Closed</span>`;
+                        actionButtonHTML = `<span style="color:#888; font-size:0.8rem; padding-left: 5px;">Trip Closed</span>`;
                     } else {
                         if (data.expectedReturnDate && data.expectedReturnDate < todayStr) {
                             statusBadge = `<span class="badge overdue">Overdue</span>`;
                         } else {
                             statusBadge = `<span class="badge ongoing">Ongoing</span>`;
                         }
-                        actionButtonHTML = `<button class="action-btn complete-btn" data-id="${docId}" style="margin-bottom: 4px;">Complete Trip</button>`;
+                        actionButtonHTML = `<button class="action-btn complete-btn" data-id="${docId}">Complete Trip</button>`;
                     }
-
-                    // Append the delete option button cleanly right underneath
-                    const deleteButtonHTML = `<button class="action-btn delete-btn" data-id="${docId}" data-name="${data.clientName || 'this file'}">Delete</button>`;
 
                     row.innerHTML = `
                         <td><strong>${data.clientName || 'N/A'}</strong></td>
@@ -349,7 +340,6 @@
                         <td>
                             <div class="actions-cell">
                                 ${actionButtonHTML}
-                                ${deleteButtonHTML}
                             </div>
                         </td>
                     `;
@@ -371,33 +361,6 @@
                                 console.error("Error updating status:", err);
                                 alert("Failed to update status.");
                                 fetchRecords();
-                            }
-                        }
-                    });
-                });
-
-                // Event Listener: Secure Record Deletion
-                document.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', async (e) => {
-                        const id = e.target.getAttribute('data-id');
-                        const clientName = e.target.getAttribute('data-name');
-                        
-                        // First Warning
-                        if (confirm(`Are you absolutely sure you want to permanently delete the rental record for "${clientName}"? This action cannot be undone.`)) {
-                            // Final Confirmation Gate
-                            if (confirm(`FINAL WARNING:\nThis will permanently erase this log and all linked payment history lines from the database. Click OK to destroy record.`)) {
-                                e.target.textContent = "Deleting...";
-                                e.target.disabled = true;
-                                try {
-                                    const rentalRef = doc(db, "rentals", id);
-                                    await deleteDoc(rentalRef);
-                                    alert("Record deleted successfully from Firestore.");
-                                    fetchRecords(); // Refresh display grid instantly
-                                } catch (err) {
-                                    console.error("Error deleting document: ", err);
-                                    alert("Failed to delete record. Check your database connections or permissions.");
-                                    fetchRecords();
-                                }
                             }
                         }
                     });
