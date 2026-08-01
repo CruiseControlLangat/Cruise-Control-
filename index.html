@@ -84,14 +84,20 @@
                             <input type="date" id="dateTaken" required>
                         </div>
                         <div class="form-group">
-                            <label>Number of Days</label>
-                            <input type="number" id="daysTaken" required min="1" placeholder="e.g. 3">
+                            <label>Time Taken</label>
+                            <input type="time" id="timeTaken" required>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Expected Return Date (Auto)</label>
-                        <input type="date" id="expectedReturnDate" readonly required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Number of Days</label>
+                            <input type="number" id="daysTaken" required min="1" placeholder="e.g. 3">
+                        </div>
+                        <div class="form-group">
+                            <label>Expected Return Date (Auto)</label>
+                            <input type="date" id="expectedReturnDate" readonly required>
+                        </div>
                     </div>
 
                     <div class="form-row">
@@ -142,9 +148,15 @@
                 document.getElementById('mainAppSection').style.display = 'block';
                 await populateFleetDropdown();
                 
-                // Set default date taken to today
-                const todayStr = new Date().toISOString().split('T')[0];
+                // Set default date and time taken to current local time
+                const now = new Date();
+                const todayStr = now.toISOString().split('T')[0];
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                
                 document.getElementById('dateTaken').value = todayStr;
+                document.getElementById('timeTaken').value = `${hours}:${minutes}`;
+                
                 calculateFormValues();
             } else {
                 window.location.href = "login.html";
@@ -203,7 +215,7 @@
         }
 
         // Attach calculation listeners to input events
-        ['dateTaken', 'daysTaken', 'ratePerDay', 'amountPaid'].forEach(id => {
+        ['dateTaken', 'timeTaken', 'daysTaken', 'ratePerDay', 'amountPaid'].forEach(id => {
             document.getElementById(id).addEventListener('input', calculateFormValues);
         });
 
@@ -219,6 +231,7 @@
             const ratePerDay = Number(document.getElementById('ratePerDay').value) || 0;
             const totalAgreedPrice = daysTaken * ratePerDay;
             const dateTaken = document.getElementById('dateTaken').value;
+            const timeTaken = document.getElementById('timeTaken').value;
             const arrearsRemaining = Math.max(0, totalAgreedPrice - initialPayment);
 
             try {
@@ -228,6 +241,7 @@
                     carModel: vehicleData.model,
                     numberPlate: vehicleData.plate,
                     dateTaken: dateTaken,
+                    timeTaken: timeTaken,
                     daysTaken: daysTaken,
                     ratePerDay: ratePerDay,
                     totalAgreedPrice: totalAgreedPrice,
@@ -236,7 +250,7 @@
                     amountPaid: initialPayment,
                     arrearsRemaining: arrearsRemaining,
                     paymentHistory: [
-                        { date: dateTaken, amount: initialPayment }
+                        { date: dateTaken, time: timeTaken, amount: initialPayment }
                     ],
                     createdAt: new Date().toISOString()
                 });
@@ -245,8 +259,13 @@
                 document.getElementById('rentalForm').reset();
                 
                 // Reset defaults
-                const todayStr = new Date().toISOString().split('T')[0];
+                const now = new Date();
+                const todayStr = now.toISOString().split('T')[0];
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                
                 document.getElementById('dateTaken').value = todayStr;
+                document.getElementById('timeTaken').value = `${hours}:${minutes}`;
                 calculateFormValues();
             } catch (err) {
                 console.error("Error saving rental:", err);
