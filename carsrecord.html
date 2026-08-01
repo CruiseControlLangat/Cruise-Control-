@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cruise Control | Vehicle Ledger (Record 2)</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #d32f2f;
+            --background-color: #f4f7f6;
+            --success-color: #28a745;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--background-color); margin: 0; padding-bottom: 40px; }
+        
+        header { text-align: center; padding: 20px 20px 15px 20px; background: #ffffff; border-bottom: 3px solid var(--primary-color); margin-bottom: 25px; border-radius: 0 0 15px 15px; }
+        .top-nav { margin: 15px 0; }
+        .top-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .top-nav a { text-decoration: none; color: var(--primary-color); background-color: #e9f0f8; padding: 8px 16px; border-radius: 5px; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; }
+        .top-nav a:hover, .top-nav a.active { background-color: var(--primary-color); color: white; }
+        .logout-btn { background-color: var(--secondary-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.8rem; }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        .filter-section { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+        select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-weight: 600; font-size: 0.95rem; flex-grow: 1; }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: #f8f9fa; border-left: 4px solid var(--primary-color); padding: 15px; border-radius: 6px; }
+        .stat-box h3 { margin: 0; font-size: 0.85rem; color: #666; text-transform: uppercase; }
+        .stat-box p { margin: 5px 0 0 0; font-size: 1.4rem; font-weight: bold; color: var(--success-color); }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: var(--primary-color); color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="mainAppSection" style="display: none;">
+        <header>
+            <h1 style="margin: 0; color: var(--primary-color); font-size: 28px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;">CRUISE CONTROL</h1>
+            <p style="margin: 5px 0 0 0; color: var(--secondary-color); font-weight: bold; font-size: 18px; letter-spacing: 0.5px;">Rentals & Logistics</p>
+
+            <nav class="top-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="fleet.html">Fleet Manager</a></li>
+                    <li><a href="Record.html">Records</a></li>
+                    <li><a href="Record2.html" class="active">Vehicle Ledger</a></li>
+                    <li><a href="report.html">Report</a></li>
+                </ul>
+            </nav>
+
+            <button id="logoutBtn" class="logout-btn">Log Out</button>
+        </header>
+
+        <div class="container">
+            <h2>Vehicle-Specific Financial Ledger</h2>
+
+            <div class="card">
+                <div class="filter-section">
+                    <label for="vehicleSelect"><strong>Select Vehicle:</strong></label>
+                    <select id="vehicleSelect">
+                        <option value="">-- Choose Vehicle Plate --</option>
+                    </select>
+                </div>
+
+                <div id="ledgerContent" style="display: none;">
+                    <div class="stat-grid">
+                        <div class="stat-box">
+                            <h3>Total Revenue Generated</h3>
+                            <p id="totalCarRevenue">KES 0.00</p>
+                        </div>
+                    </div>
+
+                    <h3>Monthly Collections Summary</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Month / Year</th>
+                                <th>Total Revenue Received</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlySummaryBody"></tbody>
+                    </table>
+
+                    <h3 style="margin-top: 30px;">Individual Payment Logs</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client Name</th>
+                                <th>Amount Paid</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentLogsBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="promptText" style="text-align: center; color: #777; padding: 20px;">
+                    Please select a vehicle above to generate its independent payment ledger.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBTYM84E6TSy0Q2QUZSt9MCYn6uAiZ6HpI",
+          authDomain: "site-bcb4b.firebaseapp.com",
+          projectId: "site-bcb4b",
+          storageBucket: "site-bcb4b.firebasestorage.app",
+          messagingSenderId: "586333698174",
+          appId: "1:586333698174:web:cae8db0888c460047d802f",
+          measurementId: "G-2RFQQQ2EPP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let allRentals = [];
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('mainAppSection').style.display = 'block';
+                initializeData();
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => window.location.href = "login.html");
+        });
+
+        async function initializeData() {
+            const vehicleSelect = document.getElementById('vehicleSelect');
+            const fleetSnap = await getDocs(collection(db, "fleet"));
+            
+            fleetSnap.forEach(docSnap => {
+                const f = docSnap.data();
+                const option = document.createElement('option');
+                option.value = f.plate;
+                option.textContent = `${f.model} - [${f.plate}]`;
+                vehicleSelect.appendChild(option);
+            });
+
+            const rentalSnap = await getDocs(collection(db, "rentals"));
+            rentalSnap.forEach(d => allRentals.push(d.data()));
+
+            vehicleSelect.addEventListener('change', (e) => {
+                const selectedPlate = e.target.value;
+                if (selectedPlate) {
+                    renderCarLedger(selectedPlate);
+                } else {
+                    document.getElementById('ledgerContent').style.display = 'none';
+                    document.getElementById('promptText').style.display = 'block';
+                }
+            });
+        }
+
+        function renderCarLedger(plate) {
+            document.getElementById('promptText').style.display = 'none';
+            document.getElementById('ledgerContent').style.display = 'block';
+
+            const filteredRentals = allRentals.filter(r => r.numberPlate === plate);
+            
+            let totalRevenue = 0;
+            let monthlyMap = {};
+            let paymentLogs = [];
+
+            filteredRentals.forEach(rental => {
+                const history = rental.paymentHistory || [{ date: rental.dateTaken, amount: rental.amountPaid }];
+                
+                history.forEach(p => {
+                    const amt = Number(p.amount) || 0;
+                    totalRevenue += amt;
+
+                    const monthKey = p.date ? p.date.substring(0, 7) : 'Unknown';
+                    monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + amt;
+
+                    paymentLogs.push({
+                        date: p.date,
+                        client: rental.clientName || 'N/A',
+                        amount: amt
+                    });
+                });
+            });
+
+            document.getElementById('totalCarRevenue').innerText = `KES ${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+            const monthBody = document.getElementById('monthlySummaryBody');
+            monthBody.innerHTML = '';
+            Object.keys(monthlyMap).sort().reverse().forEach(m => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td><strong>${m}</strong></td><td>KES ${monthlyMap[m].toLocaleString(undefined, {minimumFractionDigits: 2})}</td>`;
+                monthBody.appendChild(row);
+            });
+
+            const logsBody = document.getElementById('paymentLogsBody');
+            logsBody.innerHTML = '';
+            paymentLogs.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(log => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${log.date}</td><td>${log.client}</td><td>KES ${log.amount.toLocaleString()}</td>`;
+                logsBody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
