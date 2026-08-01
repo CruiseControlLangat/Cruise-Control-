@@ -11,102 +11,41 @@
             --background-color: #f4f7f6;
             --success-color: #28a745;
         }
-        
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: var(--background-color); 
-            margin: 0; 
-            padding-bottom: 40px; 
-        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--background-color); margin: 0; padding-bottom: 40px; }
 
-        /* --- UNIFIED HEADER & NAV STYLES --- */
-        header { 
-            text-align: center; padding: 20px 20px 15px 20px; 
-            background: #ffffff; border-bottom: 3px solid var(--primary-color); 
-            margin-bottom: 25px; border-radius: 0 0 15px 15px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
+        header { text-align: center; padding: 20px 20px 15px 20px; background: #ffffff; border-bottom: 3px solid var(--primary-color); margin-bottom: 25px; border-radius: 0 0 15px 15px; }
         .top-nav { margin: 15px 0; }
-        .top-nav ul {
-            list-style: none; padding: 0; margin: 0; 
-            display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
-        }
-        .top-nav a {
-            text-decoration: none; color: var(--primary-color); 
-            background-color: #e9f0f8; padding: 8px 16px; 
-            border-radius: 5px; font-weight: 600; font-size: 0.9rem; 
-            transition: all 0.3s ease;
-        }
-        .top-nav a:hover, .top-nav a.active {
-            background-color: var(--primary-color); color: white;
-        }
-        .logout-btn {
-            background-color: var(--secondary-color); color: white; border: none;
-            padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;
-            margin-top: 5px; font-size: 0.8rem;
-        }
+        .top-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .top-nav a { text-decoration: none; color: var(--primary-color); background-color: #e9f0f8; padding: 8px 16px; border-radius: 5px; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; }
+        .top-nav a:hover, .top-nav a.active { background-color: var(--primary-color); color: white; }
+        .logout-btn { background-color: var(--secondary-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.8rem; }
 
-        /* --- CONTAINER & CARD STYLES --- */
-        .container { 
-            max-width: 600px; margin: 0 auto; padding: 0 20px;
-        }
-        .container h2 { 
-            text-align: center; color: var(--primary-color); margin-top: 5px; margin-bottom: 20px; 
-        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        .container h2 { text-align: center; color: var(--primary-color); margin-top: 5px; margin-bottom: 20px; }
 
-        .card { 
-            background: white; 
-            padding: 40px 20px; 
-            border-radius: 10px; 
-            text-align: center; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-            border-top: 4px solid var(--success-color);
-        }
-        
-        .card h1 { 
-            margin: 0 0 10px 0; 
-            color: #555; 
-            font-size: 1.2rem; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-        }
-        
-        .revenue-amount { 
-            color: var(--success-color); 
-            font-size: 2.5rem; 
-            font-weight: 800; 
-            margin: 15px 0;
-        }
-        
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card h1 { margin: 0 0 10px 0; color: #555; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .revenue-amount { color: var(--success-color); font-size: 2.2rem; font-weight: 800; margin: 10px 0; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: var(--primary-color); color: white; }
     </style>
 </head>
 <body>
 
     <div id="mainAppSection" style="display: none;">
         <header>
-            <h1 style="margin: 0; color: var(--primary-color); font-size: 28px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;">
-                CRUISE CONTROL
-            </h1>
-            <p style="margin: 5px 0 0 0; color: var(--secondary-color); font-weight: bold; font-size: 18px; letter-spacing: 0.5px;">
-                Rentals & Logistics
-            </p>
+            <h1 style="margin: 0; color: var(--primary-color); font-size: 28px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;">CRUISE CONTROL</h1>
+            <p style="margin: 5px 0 0 0; color: var(--secondary-color); font-weight: bold; font-size: 18px; letter-spacing: 0.5px;">Rentals & Logistics</p>
 
             <nav class="top-nav">
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="Records1.html">Records</a></li>
+                    <li><a href="fleet.html">Fleet Manager</a></li>
+                    <li><a href="Record.html">Records</a></li>
+                    <li><a href="Record2.html">Vehicle Ledger</a></li>
                     <li><a href="report.html" class="active">Report</a></li>
                 </ul>
             </nav>
@@ -115,13 +54,39 @@
         </header>
 
         <div class="container">
-            <h2>Financial Performance Metrics</h2>
+            <h2>Financial Revenue Analytics</h2>
             
-            <div class="card">
-                <h1>Total Realized Revenue</h1>
+            <div class="card" style="border-top: 4px solid var(--success-color); text-align: center;">
+                <h1>Total System Revenue</h1>
                 <div id="revenueDisplay" class="revenue-amount">Calculating...</div>
-                <p style="color: #777; font-size: 0.85rem; margin: 0;">Sum total collection from fully processed and completed closed-trip records.</p>
-                <a href="dashboard.html" class="back-link">← Back to Dashboard Matrix</a>
+                <p style="color: #777; font-size: 0.85rem; margin: 0;">Sum total collections across all fleet vehicles.</p>
+            </div>
+
+            <div class="card">
+                <h3>Overall Monthly Revenue (Fleet Total)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month / Year</th>
+                            <th>Total Revenue Collected</th>
+                        </tr>
+                    </thead>
+                    <tbody id="globalMonthlyBody"></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Monthly Breakdown Per Vehicle</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vehicle Plate</th>
+                            <th>Month / Year</th>
+                            <th>Total Collected</th>
+                        </tr>
+                    </thead>
+                    <tbody id="carMonthlyBody"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -140,48 +105,73 @@
           appId: "1:586333698174:web:cae8db0888c460047d802f",
           measurementId: "G-2RFQQQ2EPP"
         };
-        
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const mainAppSection = document.getElementById('mainAppSection');
-
-        // Security Authentication Router Verification Gate
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                mainAppSection.style.display = 'block';
-                loadRevenue();
+                document.getElementById('mainAppSection').style.display = 'block';
+                loadReports();
             } else {
                 window.location.href = "login.html";
             }
         });
 
-        // Sign Out Controller
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = "login.html";
-            }).catch((error) => console.error("Logout Error:", error));
+            signOut(auth).then(() => window.location.href = "login.html");
         });
 
-        async function loadRevenue() {
+        async function loadReports() {
             try {
                 const querySnapshot = await getDocs(collection(db, "rentals"));
                 let totalRevenue = 0;
-                
+                let globalMonthlyMap = {};
+                let carMonthlyMap = {};
+
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    // Only sum up payments for completed rentals
-                    if (data.status === 'Completed') {
-                        totalRevenue += (Number(data.amountPaid) || 0);
-                    }
+                    const history = data.paymentHistory || [{ date: data.dateTaken, amount: data.amountPaid }];
+                    const plate = data.numberPlate || 'UNKNOWN';
+
+                    history.forEach(p => {
+                        const amt = Number(p.amount) || 0;
+                        totalRevenue += amt;
+
+                        const month = p.date ? p.date.substring(0, 7) : 'Unknown';
+                        
+                        globalMonthlyMap[month] = (globalMonthlyMap[month] || 0) + amt;
+
+                        const key = `${plate}_${month}`;
+                        if (!carMonthlyMap[key]) {
+                            carMonthlyMap[key] = { plate, month, amount: 0 };
+                        }
+                        carMonthlyMap[key].amount += amt;
+                    });
                 });
                 
                 document.getElementById('revenueDisplay').innerText = "KES " + totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+                const globalBody = document.getElementById('globalMonthlyBody');
+                globalBody.innerHTML = '';
+                Object.keys(globalMonthlyMap).sort().reverse().forEach(m => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td><strong>${m}</strong></td><td>KES ${globalMonthlyMap[m].toLocaleString(undefined, {minimumFractionDigits: 2})}</td>`;
+                    globalBody.appendChild(row);
+                });
+
+                const carBody = document.getElementById('carMonthlyBody');
+                carBody.innerHTML = '';
+                Object.values(carMonthlyMap).sort((a,b) => b.month.localeCompare(a.month)).forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td><span style="background:#eee; padding:2px 6px; border-radius:3px; font-weight:bold;">${item.plate}</span></td><td>${item.month}</td><td>KES ${item.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>`;
+                    carBody.appendChild(row);
+                });
+
             } catch (error) {
                 console.error("Error calculating logs:", error);
                 document.getElementById('revenueDisplay').innerText = "Error loading data";
-                document.getElementById('revenueDisplay').style.color = "var(--secondary-color)";
             }
         }
     </script>
