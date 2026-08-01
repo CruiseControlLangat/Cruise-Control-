@@ -25,8 +25,14 @@
         .card h2 { color: var(--primary-color); margin-top: 0; text-align: center; font-size: 1.4rem; }
         
         .form-group { margin-bottom: 15px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; }
         input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        input[readonly] { background-color: #e9ecef; cursor: not-allowed; font-weight: bold; color: #495057; }
+
+        .calculation-summary { background: #eef5fc; border: 1px solid #b8daff; border-radius: 5px; padding: 12px 15px; margin: 15px 0; font-size: 0.9rem; }
+        .calculation-summary div { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .calculation-summary div:last-child { margin-bottom: 0; padding-top: 5px; border-top: 1px dashed #b8daff; }
         
         .btn { background-color: var(--primary-color); color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-top: 10px; }
         .btn:hover { background-color: #004085; }
@@ -71,18 +77,41 @@
                             <option value="">-- Loading Fleet... --</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>Date Taken</label>
-                        <input type="date" id="dateTaken" required>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date Taken</label>
+                            <input type="date" id="dateTaken" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Days</label>
+                            <input type="number" id="daysTaken" required min="1" placeholder="e.g. 3">
+                        </div>
                     </div>
+
                     <div class="form-group">
-                        <label>Expected Return Date</label>
-                        <input type="date" id="expectedReturnDate" required>
+                        <label>Expected Return Date (Auto)</label>
+                        <input type="date" id="expectedReturnDate" readonly required>
                     </div>
-                    <div class="form-group">
-                        <label>Initial Payment Amount (KES)</label>
-                        <input type="number" id="amountPaid" required min="0" placeholder="0.00">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Rate Per Day (KES)</label>
+                            <input type="number" id="ratePerDay" required min="0" placeholder="e.g. 3000">
+                        </div>
+                        <div class="form-group">
+                            <label>Initial Payment (KES)</label>
+                            <input type="number" id="amountPaid" required min="0" placeholder="0.00">
+                        </div>
                     </div>
+
+                    <!-- Financial Summary Preview -->
+                    <div class="calculation-summary">
+                        <div><span>Total Contract Value:</span> <strong id="summaryTotal">KES 0</strong></div>
+                        <div><span>Initial Payment Made:</span> <strong id="summaryPaid" style="color: var(--success-color);">KES 0</strong></div>
+                        <div><span>Initial Arrears Balance:</span> <strong id="summaryArrears" style="color: var(--secondary-color);">KES 0</strong></div>
+                    </div>
+
                     <button type="submit" class="btn" id="saveBtn">Save Rental Record</button>
                 </form>
             </div>
@@ -112,6 +141,11 @@
             if (user) {
                 document.getElementById('mainAppSection').style.display = 'block';
                 await populateFleetDropdown();
+                
+                // Set default date taken to today
+                const todayStr = new Date().toISOString().split('T')[0];
+                document.getElementById('dateTaken').value = todayStr;
+                calculateFormValues();
             } else {
                 window.location.href = "login.html";
             }
@@ -143,6 +177,36 @@
             }
         }
 
+        // Auto-calculator logic for dates & financial summary
+        function calculateFormValues() {
+            const dateTakenInput = document.getElementById('dateTaken').value;
+            const daysTaken = parseInt(document.getElementById('daysTaken').value) || 0;
+            const ratePerDay = parseFloat(document.getElementById('ratePerDay').value) || 0;
+            const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
+
+            // 1. Calculate Expected Return Date
+            if (dateTakenInput && daysTaken > 0) {
+                const returnDate = new Date(dateTakenInput);
+                returnDate.setDate(returnDate.getDate() + daysTaken);
+                document.getElementById('expectedReturnDate').value = returnDate.toISOString().split('T')[0];
+            } else {
+                document.getElementById('expectedReturnDate').value = '';
+            }
+
+            // 2. Calculate Financial Summary
+            const totalCost = daysTaken * ratePerDay;
+            const arrears = Math.max(0, totalCost - amountPaid);
+
+            document.getElementById('summaryTotal').innerText = `KES ${totalCost.toLocaleString()}`;
+            document.getElementById('summaryPaid').innerText = `KES ${amountPaid.toLocaleString()}`;
+            document.getElementById('summaryArrears').innerText = arrears > 0 ? `KES ${arrears.toLocaleString()}` : `Cleared`;
+        }
+
+        // Attach calculation listeners to input events
+        ['dateTaken', 'daysTaken', 'ratePerDay', 'amountPaid'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateFormValues);
+        });
+
         document.getElementById('rentalForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('saveBtn');
@@ -150,8 +214,12 @@
             btn.textContent = "Saving...";
 
             const vehicleData = JSON.parse(document.getElementById('vehicleSelect').value);
-            const initialPayment = Number(document.getElementById('amountPaid').value);
+            const initialPayment = Number(document.getElementById('amountPaid').value) || 0;
+            const daysTaken = Number(document.getElementById('daysTaken').value) || 0;
+            const ratePerDay = Number(document.getElementById('ratePerDay').value) || 0;
+            const totalAgreedPrice = daysTaken * ratePerDay;
             const dateTaken = document.getElementById('dateTaken').value;
+            const arrearsRemaining = Math.max(0, totalAgreedPrice - initialPayment);
 
             try {
                 await addDoc(collection(db, "rentals"), {
@@ -160,9 +228,13 @@
                     carModel: vehicleData.model,
                     numberPlate: vehicleData.plate,
                     dateTaken: dateTaken,
+                    daysTaken: daysTaken,
+                    ratePerDay: ratePerDay,
+                    totalAgreedPrice: totalAgreedPrice,
                     expectedReturnDate: document.getElementById('expectedReturnDate').value,
                     status: "Active",
                     amountPaid: initialPayment,
+                    arrearsRemaining: arrearsRemaining,
                     paymentHistory: [
                         { date: dateTaken, amount: initialPayment }
                     ],
@@ -171,6 +243,11 @@
 
                 alert("Rental record created successfully!");
                 document.getElementById('rentalForm').reset();
+                
+                // Reset defaults
+                const todayStr = new Date().toISOString().split('T')[0];
+                document.getElementById('dateTaken').value = todayStr;
+                calculateFormValues();
             } catch (err) {
                 console.error("Error saving rental:", err);
                 alert("Failed to save rental record.");
