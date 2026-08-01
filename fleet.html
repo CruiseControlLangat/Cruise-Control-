@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cruise Control | Fleet Management</title>
+    <title>Cruise Control | Fleet Manager</title>
     <style>
         :root {
             --primary-color: #0056b3;
@@ -20,23 +20,24 @@
         .top-nav a:hover, .top-nav a.active { background-color: var(--primary-color); color: white; }
         .logout-btn { background-color: var(--secondary-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.8rem; }
 
-        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        .grid-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; }
-        @media (max-width: 768px) { .grid-layout { grid-template-columns: 1fr; } }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; }
+        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
 
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .card h2 { color: var(--primary-color); margin-top: 0; font-size: 1.2rem; }
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card h2 { color: var(--primary-color); margin-top: 0; font-size: 1.3rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        .btn { background-color: var(--primary-color); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .btn-danger { background-color: var(--secondary-color); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .btn:hover { background-color: #004085; }
 
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background-color: #e9f0f8; color: var(--primary-color); }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: var(--primary-color); color: white; }
+        .badge { background: #eee; padding: 3px 6px; border-radius: 3px; font-weight: bold; }
+        .delete-btn { background-color: var(--secondary-color); color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
     </style>
 </head>
 <body>
@@ -61,43 +62,42 @@
         </header>
 
         <div class="container">
-            <div class="grid-layout">
-                <!-- Add Vehicle Form -->
-                <div class="card">
-                    <h2>Add New Fleet Vehicle</h2>
-                    <form id="vehicleForm">
-                        <div class="form-group">
-                            <label>Car Model</label>
-                            <input type="text" id="carModel" placeholder="e.g., Toyota Prado" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Number Plate</label>
-                            <input type="text" id="numberPlate" placeholder="e.g., KBC 123A" style="text-transform: uppercase;" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Color</label>
-                            <input type="text" id="carColor" placeholder="e.g., Silver" required>
-                        </div>
-                        <button type="submit" class="btn" id="saveVehicleBtn">Add Vehicle to Fleet</button>
-                    </form>
-                </div>
+            <!-- Form Card -->
+            <div class="card">
+                <h2>Add New Vehicle</h2>
+                <form id="fleetForm">
+                    <div class="form-group">
+                        <label>Vehicle Model</label>
+                        <input type="text" id="carModel" required placeholder="e.g. Toyota Prado">
+                    </div>
+                    <div class="form-group">
+                        <label>Number Plate</label>
+                        <input type="text" id="numberPlate" required placeholder="e.g. KDA 123X">
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="text" id="carColor" required placeholder="e.g. White">
+                    </div>
+                    <button type="submit" class="btn" id="saveBtn">Register Vehicle</button>
+                </form>
+            </div>
 
-                <!-- Active Fleet Table -->
-                <div class="card">
-                    <h2>Registered Fleet List</h2>
-                    <div id="loading" style="text-align: center; color: #777;">Loading fleet data...</div>
-                    <table id="fleetTable" style="display: none;">
-                        <thead>
-                            <tr>
-                                <th>Model</th>
-                                <th>Plate</th>
-                                <th>Color</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fleetBody"></tbody>
-                    </table>
-                </div>
+            <!-- List Card -->
+            <div class="card">
+                <h2>Registered Fleet List</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Plate</th>
+                            <th>Color</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fleetTableBody">
+                        <tr><td colspan="4" style="text-align:center;">Loading fleet database...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -105,7 +105,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyBTYM84E6TSy0Q2QUZSt9MCYn6uAiZ6HpI",
@@ -134,10 +134,39 @@
             signOut(auth).then(() => window.location.href = "login.html");
         });
 
+        // Load Fleet List
+        async function loadFleet() {
+            const tableBody = document.getElementById('fleetTableBody');
+            try {
+                const snapshot = await getDocs(collection(db, "fleet"));
+                tableBody.innerHTML = '';
+
+                if (snapshot.empty) {
+                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No vehicles registered in fleet.</td></tr>';
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${data.model || 'N/A'}</strong></td>
+                        <td><span class="badge">${data.plate || 'N/A'}</span></td>
+                        <td>${data.color || 'N/A'}</td>
+                        <td><button class="delete-btn" onclick="deleteVehicle('${docSnap.id}')">Delete</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (err) {
+                console.error("Error loading fleet:", err);
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--secondary-color);">Error loading fleet. Check Firebase Firestore rules.</td></tr>';
+            }
+        }
+
         // Add Vehicle
-        document.getElementById('vehicleForm').addEventListener('submit', async (e) => {
+        document.getElementById('fleetForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('saveVehicleBtn');
+            const btn = document.getElementById('saveBtn');
             btn.disabled = true;
             btn.textContent = "Saving...";
 
@@ -148,58 +177,29 @@
                     color: document.getElementById('carColor').value,
                     createdAt: new Date().toISOString()
                 });
-                document.getElementById('vehicleForm').reset();
+
+                alert("Vehicle added to fleet successfully!");
+                document.getElementById('fleetForm').reset();
                 loadFleet();
             } catch (err) {
-                console.error(err);
-                alert("Failed to save vehicle.");
+                console.error("Error saving vehicle:", err);
+                alert(`Failed to save vehicle: ${err.message}`);
             } finally {
                 btn.disabled = false;
-                btn.textContent = "Add Vehicle to Fleet";
+                btn.textContent = "Register Vehicle";
             }
         });
 
-        // Fetch & Load Fleet
-        async function loadFleet() {
-            const body = document.getElementById('fleetBody');
-            const loading = document.getElementById('loading');
-            const table = document.getElementById('fleetTable');
-
-            try {
-                const q = query(collection(db, "fleet"), orderBy("createdAt", "desc"));
-                const snapshot = await getDocs(q);
-                body.innerHTML = '';
-
-                if (snapshot.empty) {
-                    loading.textContent = "No vehicles registered in the fleet yet.";
-                    table.style.display = 'none';
-                    return;
-                }
-
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><strong>${data.model}</strong></td>
-                        <td><span style="background:#eee; padding:2px 6px; border-radius:3px; font-weight:bold;">${data.plate}</span></td>
-                        <td>${data.color}</td>
-                        <td><button class="btn-danger" onclick="deleteVehicle('${docSnap.id}')">Remove</button></td>
-                    `;
-                    body.appendChild(row);
-                });
-
-                loading.style.display = 'none';
-                table.style.display = 'table';
-            } catch (err) {
-                console.error(err);
-                loading.textContent = "Error loading fleet.";
-            }
-        }
-
+        // Delete Vehicle
         window.deleteVehicle = async (id) => {
-            if (confirm("Are you sure you want to remove this vehicle from fleet records?")) {
-                await deleteDoc(doc(db, "fleet", id));
-                loadFleet();
+            if (confirm("Are you sure you want to remove this vehicle from the fleet?")) {
+                try {
+                    await deleteDoc(doc(db, "fleet", id));
+                    loadFleet();
+                } catch (err) {
+                    console.error("Error deleting vehicle:", err);
+                    alert("Failed to delete vehicle.");
+                }
             }
         };
     </script>
