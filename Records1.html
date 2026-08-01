@@ -9,164 +9,41 @@
             --primary-color: #0056b3;
             --secondary-color: #d32f2f;
             --background-color: #f4f7f6;
-            --warning-color: #ffc107;
             --success-color: #28a745;
         }
-        
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: var(--background-color); 
-            margin: 0; 
-            padding-bottom: 20px; 
-        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--background-color); margin: 0; padding-bottom: 40px; }
 
-        /* --- HEADER & NAV STYLES --- */
-        header { 
-            text-align: center; padding: 20px 20px 15px 20px; 
-            background: #ffffff; border-bottom: 3px solid var(--primary-color); 
-            margin-bottom: 20px; border-radius: 0 0 15px 15px; 
-        }
+        header { text-align: center; padding: 20px 20px 15px 20px; background: #ffffff; border-bottom: 3px solid var(--primary-color); margin-bottom: 25px; border-radius: 0 0 15px 15px; }
         .top-nav { margin: 15px 0; }
-        .top-nav ul {
-            list-style: none; padding: 0; margin: 0; 
-            display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
-        }
-        .top-nav a {
-            text-decoration: none; color: var(--primary-color); 
-            background-color: #e9f0f8; padding: 8px 16px; 
-            border-radius: 5px; font-weight: 600; font-size: 0.9rem; 
-            transition: all 0.3s ease;
-        }
-        .top-nav a:hover, .top-nav a.active {
-            background-color: var(--primary-color); color: white;
-        }
-        .logout-btn {
-            background-color: var(--secondary-color); color: white; border: none;
-            padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;
-            margin-top: 5px; font-size: 0.8rem;
-        }
+        .top-nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .top-nav a { text-decoration: none; color: var(--primary-color); background-color: #e9f0f8; padding: 8px 16px; border-radius: 5px; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; }
+        .top-nav a:hover, .top-nav a.active { background-color: var(--primary-color); color: white; }
+        .logout-btn { background-color: var(--secondary-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.8rem; }
 
-        /* --- TABLE & CONTAINER STYLES --- */
-        .container { 
-            max-width: 1400px; margin: 0 auto; background: white; 
-            padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-        }
-        .container h2 { text-align: center; color: var(--primary-color); margin-top: 5px; margin-bottom: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow-x: auto; }
         
-        .table-responsive {
-            overflow-x: auto;
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: var(--primary-color); color: white; }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 0.85rem;
-        }
-        
-        th, td {
-            padding: 10px 8px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-        }
-        
-        th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-        
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        /* Status Badges */
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.75rem;
-            display: inline-block;
-            text-align: center;
-        }
-        .badge.clear { background-color: #e2f0d9; color: #385723; }
-        .badge.arrears { background-color: #fce4d6; color: var(--secondary-color); }
-        
-        /* Trip Status Badges */
-        .badge.completed { background-color: #d1ecf1; color: #0c5460; }
-        .badge.ongoing { background-color: #e8f5e9; color: var(--success-color); }
-        .badge.overdue { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        
-        /* Action Layout Buttons */
-        .actions-cell {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            align-items: flex-start;
-        }
-        .action-btn {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            white-space: nowrap;
-            width: 100%;
-        }
-        .action-btn:hover {
-            background-color: #5a6268;
-        }
-        
-        /* Payment Ledger Styling */
-        .payment-ledger {
-            font-size: 0.75rem;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            max-height: 80px;
-            overflow-y: auto;
-        }
-        .payment-ledger li {
-            border-bottom: 1px dashed #ddd;
-            padding: 2px 0;
-            white-space: nowrap;
-        }
-        .total-pill {
-            font-weight: bold;
-            display: block;
-            margin-top: 4px;
-            color: #333;
-        }
-        
-        .loading-text {
-            text-align: center;
-            font-weight: bold;
-            color: #666;
-            padding: 20px;
-        }
+        .btn-action { background: var(--primary-color); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; margin-right: 4px; }
     </style>
 </head>
 <body>
 
     <div id="mainAppSection" style="display: none;">
         <header>
-            <h1 style="margin: 0; color: var(--primary-color); font-size: 28px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;">
-                CRUISE CONTROL
-            </h1>
-            <p style="margin: 5px 0 0 0; color: var(--secondary-color); font-weight: bold; font-size: 18px; letter-spacing: 0.5px;">
-                Rentals & Logistics
-            </p>
+            <h1 style="margin: 0; color: var(--primary-color); font-size: 28px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;">CRUISE CONTROL</h1>
+            <p style="margin: 5px 0 0 0; color: var(--secondary-color); font-weight: bold; font-size: 18px; letter-spacing: 0.5px;">Rentals & Logistics</p>
 
             <nav class="top-nav">
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="Records.html" class="active">Records</a></li>
+                    <li><a href="fleet.html">Fleet Manager</a></li>
+                    <li><a href="Record.html" class="active">Records</a></li>
+                    <li><a href="Record2.html">Vehicle Ledger</a></li>
                     <li><a href="report.html">Report</a></li>
                 </ul>
             </nav>
@@ -175,30 +52,22 @@
         </header>
 
         <div class="container">
-            <h2>Entire Rental Records Log</h2>
-            
-            <div class="table-responsive">
-                <div id="loading" class="loading-text">Loading database logs...</div>
-                <table id="recordsTable" style="display: none;">
+            <h2>Rental History Logs</h2>
+            <div class="card">
+                <table>
                     <thead>
                         <tr>
-                            <th>Client Name</th>
+                            <th>Client</th>
                             <th>Phone</th>
-                            <th>Vehicle Model</th>
+                            <th>Vehicle</th>
                             <th>Plate</th>
                             <th>Date Taken</th>
-                            <th>Days</th>
-                            <th>Return Date</th>
-                            <th>Description / Notes</th>
-                            <th>Trip Status</th>
-                            <th>Rate/Day</th>
-                            <th>Payment History Log</th>
-                            <th>Arrears</th>
+                            <th>Total Paid</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody">
-                    </tbody>
+                    <tbody id="recordsBody"></tbody>
                 </table>
             </div>
         </div>
@@ -207,7 +76,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyBTYM84E6TSy0Q2QUZSt9MCYn6uAiZ6HpI",
@@ -223,158 +92,71 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const mainAppSection = document.getElementById('mainAppSection');
-
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                mainAppSection.style.display = 'block';
-                fetchRecords();
+                document.getElementById('mainAppSection').style.display = 'block';
+                loadRecords();
             } else {
                 window.location.href = "login.html";
             }
         });
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = "login.html";
-            }).catch((error) => console.error("Logout Error:", error));
+            signOut(auth).then(() => window.location.href = "login.html");
         });
 
-        async function fetchRecords() {
-            const tableBody = document.getElementById('tableBody');
-            const loadingText = document.getElementById('loading');
-            const recordsTable = document.getElementById('recordsTable');
+        async function loadRecords() {
+            const body = document.getElementById('recordsBody');
+            body.innerHTML = '<tr><td colspan="8">Loading logs...</td></tr>';
 
-            try {
-                const q = query(collection(db, "rentals"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
+            const snapshot = await getDocs(collection(db, "rentals"));
+            body.innerHTML = '';
+
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
                 
-                tableBody.innerHTML = "";
-                
-                if (querySnapshot.empty) {
-                    loadingText.textContent = "No rental records found in the system.";
-                    return;
+                // calculate sum of payment history
+                let totalPaid = 0;
+                if (data.paymentHistory) {
+                    data.paymentHistory.forEach(p => totalPaid += Number(p.amount) || 0);
+                } else {
+                    totalPaid = Number(data.amountPaid) || 0;
                 }
 
-                const todayStr = new Date().toISOString().split('T')[0];
-                
-                let activeRecords = [];
-                let completedRecords = [];
-
-                querySnapshot.forEach((documentSnapshot) => {
-                    const data = documentSnapshot.data();
-                    const docId = documentSnapshot.id;
-                    
-                    if (data.status === 'Completed') {
-                        completedRecords.push({ id: docId, data: data });
-                    } else {
-                        activeRecords.push({ id: docId, data: data });
-                    }
-                });
-
-                const sortedRecords = [...activeRecords, ...completedRecords];
-
-                sortedRecords.forEach((item) => {
-                    const data = item.data;
-                    const docId = item.id;
-                    const row = document.createElement('tr');
-
-                    // Math Handling for Payment Ledger Lists
-                    const days = Number(data.daysTaken) || 0;
-                    const rate = Number(data.ratePerDay) || 0;
-                    const totalCost = days * rate;
-
-                    let paymentsListHTML = '';
-                    let runningPaidTotal = 0;
-
-                    // Parse historical logs cleanly
-                    if (data.paymentHistory && Array.isArray(data.paymentHistory)) {
-                        data.paymentHistory.forEach(payment => {
-                            runningPaidTotal += Number(payment.amount) || 0;
-                            paymentsListHTML += `<li>📅 ${payment.date}: <strong>${Number(payment.amount).toLocaleString()}</strong></li>`;
-                        });
-                    } else {
-                        runningPaidTotal = Number(data.amountPaid) || 0;
-                        paymentsListHTML += `<li>📅 Base Setup: <strong>${runningPaidTotal.toLocaleString()}</strong></li>`;
-                    }
-
-                    const dynamicArrears = totalCost - runningPaidTotal;
-
-                    // Financial Status Badges
-                    const financialBadge = dynamicArrears <= 0 
-                        ? `<span class="badge clear">Cleared</span>` 
-                        : `<span class="badge arrears">KES ${dynamicArrears.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>`;
-
-                    // Operational Trip Status Badges
-                    let statusBadge = '';
-                    let actionButtonHTML = '';
-
-                    if (data.status === 'Completed') {
-                        statusBadge = `<span class="badge completed">Completed</span>`;
-                        actionButtonHTML = `<span style="color:#888; font-size:0.8rem; padding-left: 5px;">Trip Closed</span>`;
-                    } else {
-                        if (data.expectedReturnDate && data.expectedReturnDate < todayStr) {
-                            statusBadge = `<span class="badge overdue">Overdue</span>`;
-                        } else {
-                            statusBadge = `<span class="badge ongoing">Ongoing</span>`;
-                        }
-                        actionButtonHTML = `<button class="action-btn complete-btn" data-id="${docId}">Complete Trip</button>`;
-                    }
-
-                    row.innerHTML = `
-                        <td><strong>${data.clientName || 'N/A'}</strong></td>
-                        <td>${data.clientPhone || 'N/A'}</td>
-                        <td>${data.carModel || 'N/A'} (${data.carColor || ''})</td>
-                        <td><span style="background: #eee; padding: 2px 6px; border-radius:3px; font-weight:bold;">${data.numberPlate || 'N/A'}</span></td>
-                        <td>${data.dateTaken || 'N/A'}</td>
-                        <td>${data.daysTaken || '0'} Days</td>
-                        <td>${data.expectedReturnDate || 'N/A'}</td>
-                        <td style="max-width: 150px; overflow-wrap: break-word; color: #555; font-style: italic;">${data.description || 'No notes'}</td>
-                        <td>${statusBadge}</td>
-                        <td>${rate.toLocaleString()}</td>
-                        <td>
-                            <ul class="payment-ledger">${paymentsListHTML}</ul>
-                            <span class="total-pill">Total: ${runningPaidTotal.toLocaleString()}</span>
-                        </td>
-                        <td>${financialBadge}</td>
-                        <td>
-                            <div class="actions-cell">
-                                ${actionButtonHTML}
-                            </div>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-
-                // Event Listener: Complete Trip Closure
-                document.querySelectorAll('.complete-btn').forEach(button => {
-                    button.addEventListener('click', async (e) => {
-                        const id = e.target.getAttribute('data-id');
-                        if (confirm("Mark this vehicle as returned to yard?")) {
-                            e.target.textContent = "Updating...";
-                            e.target.disabled = true;
-                            try {
-                                const rentalRef = doc(db, "rentals", id);
-                                await updateDoc(rentalRef, { status: 'Completed' });
-                                fetchRecords(); 
-                            } catch (err) {
-                                console.error("Error updating status:", err);
-                                alert("Failed to update status.");
-                                fetchRecords();
-                            }
-                        }
-                    });
-                });
-
-                loadingText.style.display = 'none';
-                recordsTable.style.display = 'table';
-
-            } catch (error) {
-                console.error("Error loading records: ", error);
-                loadingText.textContent = "Error fetching records.";
-                loadingText.style.color = "var(--secondary-color)";
-            }
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.clientName}</td>
+                    <td>${data.clientPhone}</td>
+                    <td>${data.carModel}</td>
+                    <td><strong>${data.numberPlate}</strong></td>
+                    <td>${data.dateTaken}</td>
+                    <td>KES ${totalPaid.toLocaleString()}</td>
+                    <td><span style="color: ${data.status === 'Active' ? 'green' : 'gray'}; font-weight:bold;">${data.status || 'Active'}</span></td>
+                    <td>
+                        <button class="btn-action" onclick="addPayment('${docSnap.id}')">+ Pay</button>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
         }
+
+        window.addPayment = async (id) => {
+            const amt = prompt("Enter additional payment amount (KES):");
+            if (amt && !isNaN(amt) && Number(amt) > 0) {
+                const today = new Date().toISOString().split('T')[0];
+                const docRef = doc(db, "rentals", id);
+                
+                await updateDoc(docRef, {
+                    paymentHistory: arrayUnion({
+                        date: today,
+                        amount: Number(amt)
+                    })
+                });
+
+                alert("Payment added!");
+                loadRecords();
+            }
+        };
     </script>
 </body>
 </html>
