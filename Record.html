@@ -36,7 +36,6 @@
         th { background-color: var(--primary-color); color: white; white-space: nowrap; }
         
         .btn-action { background: var(--primary-color); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; margin-right: 4px; }
-        .btn-extend { background: #6f42c1; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
 
         .badge-arrears { color: #d32f2f; font-weight: bold; }
         .badge-cleared { color: #28a745; font-weight: bold; }
@@ -44,7 +43,7 @@
 
         /* Print styles to clean up paper/PDF output */
         @media print {
-            header, .logout-btn, .top-nav, .header-actions, .btn-action, .btn-extend {
+            header, .logout-btn, .top-nav, .header-actions, .btn-action {
                 display: none !important;
             }
             body { background-color: #fff; padding: 0; }
@@ -155,7 +154,7 @@
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
                 
-                // Fields handling with fallbacks
+                // Read values updated by your dashboard automatically
                 const daysTaken = Number(data.daysTaken) || Number(data.days) || Number(data.duration) || 1;
                 const returnDate = data.extendedReturnDate || data.returnDate || data.dateReturned || 'N/A';
                 const isExtended = Boolean(data.extendedReturnDate);
@@ -215,7 +214,6 @@
                     <td><span style="color: ${data.status === 'Active' ? 'green' : 'gray'}; font-weight:bold;">${data.status || 'Active'}</span></td>
                     <td>
                         <button class="btn-action" onclick="addPayment('${docSnap.id}')">+ Pay</button>
-                        <button class="btn-extend" onclick="extendReturnDate('${docSnap.id}', '${returnDate}')">📅 Extend</button>
                     </td>
                 `;
                 body.appendChild(row);
@@ -286,20 +284,6 @@
                 });
 
                 alert("Payment added!");
-                loadRecords();
-            }
-        };
-
-        window.extendReturnDate = async (id, currentDate) => {
-            const newDate = prompt(`Current Return Date: ${currentDate}\n\nEnter new extended return date (YYYY-MM-DD):`);
-            if (newDate && newDate.trim() !== "") {
-                const docRef = doc(db, "rentals", id);
-                
-                await updateDoc(docRef, {
-                    extendedReturnDate: newDate.trim()
-                });
-
-                alert("Return date successfully extended!");
                 loadRecords();
             }
         };
