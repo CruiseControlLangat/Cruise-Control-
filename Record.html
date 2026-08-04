@@ -28,8 +28,6 @@
         th { background-color: var(--primary-color); color: white; }
         
         .btn-action { background: var(--primary-color); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; margin-right: 4px; }
-        .btn-delete { background: var(--secondary-color); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
-        .btn-action:hover, .btn-delete:hover { opacity: 0.85; }
     </style>
 </head>
 <body>
@@ -78,7 +76,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, arrayUnion, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyBTYM84E6TSy0Q2QUZSt9MCYn6uAiZ6HpI",
@@ -111,46 +109,50 @@
             const body = document.getElementById('recordsBody');
             body.innerHTML = '<tr><td colspan="8">Loading logs...</td></tr>';
 
+            // Query Firestore to order records with newest first
+            // Fallback: If "createdAt" is not available on older entries, order by "dateTaken"
+            let snapshot;
             try {
-                const snapshot = await getDocs(collection(db, "rentals"));
-                body.innerHTML = '';
+                const rentalsQuery = query(collection(db, "rentals"), orderBy("createdAt", "desc"));
+                snapshot = await getDocs(rentalsQuery);
+            } catch (err) {
+                // Fallback query if createdAt field or index isn't present
+                const fallbackQuery = query(collection(db, "rentals"), orderBy("dateTaken", "desc"));
+                snapshot = await getDocs(fallbackQuery);
+            }
 
-                if (snapshot.empty) {
-                    body.innerHTML = '<tr><td colspan="8" style="text-align:center;">No rental history records available.</td></tr>';
-                    return;
+            body.innerHTML = '';
+
+            // Handle sorting manually on client side if Firestore field types vary
+            const recordsData = [];
+            snapshot.forEach(docSnap => {
+                recordsData.push({ id: docSnap.id, ...docSnap.data() });
+            });
+
+            recordsData.forEach(data => {
+                // calculate sum of payment history
+                let totalPaid = 0;
+                if (data.paymentHistory) {
+                    data.paymentHistory.forEach(p => totalPaid += Number(p.amount) || 0);
+                } else {
+                    totalPaid = Number(data.amountPaid) || 0;
                 }
 
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    
-                    // calculate sum of payment history
-                    let totalPaid = 0;
-                    if (data.paymentHistory) {
-                        data.paymentHistory.forEach(p => totalPaid += Number(p.amount) || 0);
-                    } else {
-                        totalPaid = Number(data.amountPaid) || 0;
-                    }
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${data.clientName || 'N/A'}</td>
-                        <td>${data.clientPhone || 'N/A'}</td>
-                        <td>${data.carModel || 'N/A'}</td>
-                        <td><strong>${data.numberPlate || 'N/A'}</strong></td>
-                        <td>${data.dateTaken || 'N/A'}</td>
-                        <td>KES ${totalPaid.toLocaleString()}</td>
-                        <td><span style="color: ${data.status === 'Active' ? 'green' : 'gray'}; font-weight:bold;">${data.status || 'Active'}</span></td>
-                        <td>
-                            <button class="btn-action" onclick="addPayment('${docSnap.id}')">+ Pay</button>
-                            <button class="btn-delete" onclick="deleteRecord('${docSnap.id}')">Delete</button>
-                        </td>
-                    `;
-                    body.appendChild(row);
-                });
-            } catch (err) {
-                console.error("Error fetching logs:", err);
-                body.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--secondary-color);">Failed to load rental records.</td></tr>';
-            }
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.clientName || 'N/A'}</td>
+                    <td>${data.clientPhone || 'N/A'}</td>
+                    <td>${data.carModel || 'N/A'}</td>
+                    <td><strong>${data.numberPlate || 'N/A'}</strong></td>
+                    <td>${data.dateTaken || 'N/A'}</td>
+                    <td>KES ${totalPaid.toLocaleString()}</td>
+                    <td><span style="color: ${data.status === 'Active' ? 'green' : 'gray'}; font-weight:bold;">${data.status || 'Active'}</span></td>
+                    <td>
+                        <button class="btn-action" onclick="addPayment('${data.id}')">+ Pay</button>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
         }
 
         window.addPayment = async (id) => {
@@ -159,33 +161,15 @@
                 const today = new Date().toISOString().split('T')[0];
                 const docRef = doc(db, "rentals", id);
                 
-                try {
-                    await updateDoc(docRef, {
-                        paymentHistory: arrayUnion({
-                            date: today,
-                            amount: Number(amt)
-                        })
-                    });
+                await updateDoc(docRef, {
+                    paymentHistory: arrayUnion({
+                        date: today,
+                        amount: Number(amt)
+                    })
+                });
 
-                    alert("Payment added!");
-                    loadRecords();
-                } catch (err) {
-                    console.error("Payment error:", err);
-                    alert("Failed to record payment.");
-                }
-            }
-        };
-
-        window.deleteRecord = async (id) => {
-            if (confirm("Are you sure you want to permanently delete this rental record? This action cannot be undone.")) {
-                try {
-                    await deleteDoc(doc(db, "rentals", id));
-                    alert("Record deleted successfully!");
-                    loadRecords();
-                } catch (err) {
-                    console.error("Delete error:", err);
-                    alert("Failed to delete record.");
-                }
+                alert("Payment added!");
+                loadRecords();
             }
         };
     </script>
