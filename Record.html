@@ -20,7 +20,7 @@
         .top-nav a:hover, .top-nav a.active { background-color: var(--primary-color); color: white; }
         .logout-btn { background-color: var(--secondary-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.8rem; }
 
-        .container { max-width: 1250px; margin: 0 auto; padding: 0 20px; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow-x: auto; }
         
         .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -32,13 +32,10 @@
         .btn-download:hover { background-color: #218838; }
 
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background-color: var(--primary-color); color: white; white-space: nowrap; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: var(--primary-color); color: white; }
         
         .btn-action { background: var(--primary-color); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; margin-right: 4px; }
-
-        .badge-arrears { color: #d32f2f; font-weight: bold; }
-        .badge-cleared { color: #28a745; font-weight: bold; }
 
         /* Print styles to clean up paper/PDF output */
         @media print {
@@ -91,10 +88,7 @@
                             <th>Vehicle</th>
                             <th>Plate</th>
                             <th>Date Taken</th>
-                            <th>Area of Use</th>
-                            <th>Initial Pay</th>
                             <th>Total Paid</th>
-                            <th>Arrears</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -142,7 +136,7 @@
 
         async function loadRecords() {
             const body = document.getElementById('recordsBody');
-            body.innerHTML = '<tr><td colspan="11">Loading logs...</td></tr>';
+            body.innerHTML = '<tr><td colspan="8">Loading logs...</td></tr>';
 
             const snapshot = await getDocs(collection(db, "rentals"));
             body.innerHTML = '';
@@ -151,25 +145,12 @@
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
                 
-                // Fields handling with fallbacks
-                const initialPay = Number(data.initialPayment) || 0;
-                const totalCost = Number(data.totalCost) || Number(data.totalAmount) || 0;
-                const areaOfUse = data.areaOfUse || data.location || 'N/A';
-
-                // Calculate total payment done (initial payment + additional payment history)
-                let totalPaid = initialPay;
-                if (data.paymentHistory && Array.isArray(data.paymentHistory)) {
+                // calculate sum of payment history
+                let totalPaid = 0;
+                if (data.paymentHistory) {
                     data.paymentHistory.forEach(p => totalPaid += Number(p.amount) || 0);
-                } else if (data.amountPaid) {
-                    totalPaid = Math.max(totalPaid, Number(data.amountPaid) || 0);
-                }
-
-                // Calculate Arrears (Total Cost - Total Paid) or fallback to data.arrears
-                let arrears = 0;
-                if (data.arrears !== undefined) {
-                    arrears = Number(data.arrears) || 0;
-                } else if (totalCost > 0) {
-                    arrears = Math.max(0, totalCost - totalPaid);
+                } else {
+                    totalPaid = Number(data.amountPaid) || 0;
                 }
 
                 // Cache for CSV Export
@@ -179,24 +160,18 @@
                     carModel: data.carModel || '',
                     numberPlate: data.numberPlate || '',
                     dateTaken: data.dateTaken || '',
-                    areaOfUse: areaOfUse,
-                    initialPayment: initialPay,
                     totalPaid: totalPaid,
-                    arrears: arrears,
                     status: data.status || 'Active'
                 });
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${data.clientName || 'N/A'}</td>
-                    <td>${data.clientPhone || 'N/A'}</td>
-                    <td>${data.carModel || 'N/A'}</td>
-                    <td><strong>${data.numberPlate || 'N/A'}</strong></td>
-                    <td>${data.dateTaken || 'N/A'}</td>
-                    <td>${areaOfUse}</td>
-                    <td>KES ${initialPay.toLocaleString()}</td>
+                    <td>${data.clientName}</td>
+                    <td>${data.clientPhone}</td>
+                    <td>${data.carModel}</td>
+                    <td><strong>${data.numberPlate}</strong></td>
+                    <td>${data.dateTaken}</td>
                     <td>KES ${totalPaid.toLocaleString()}</td>
-                    <td class="${arrears > 0 ? 'badge-arrears' : 'badge-cleared'}">KES ${arrears.toLocaleString()}</td>
                     <td><span style="color: ${data.status === 'Active' ? 'green' : 'gray'}; font-weight:bold;">${data.status || 'Active'}</span></td>
                     <td>
                         <button class="btn-action" onclick="addPayment('${docSnap.id}')">+ Pay</button>
@@ -213,18 +188,7 @@
                 return;
             }
 
-            const headers = [
-                "Client Name", 
-                "Phone", 
-                "Vehicle", 
-                "Plate", 
-                "Date Taken", 
-                "Area of Use", 
-                "Initial Payment (KES)", 
-                "Payment Done (KES)", 
-                "Arrears (KES)", 
-                "Status"
-            ];
+            const headers = ["Client Name", "Phone", "Vehicle", "Plate", "Date Taken", "Total Paid (KES)", "Status"];
             
             const csvRows = [
                 headers.join(","),
@@ -234,10 +198,7 @@
                     `"${r.carModel.replace(/"/g, '""')}"`,
                     `"${r.numberPlate.replace(/"/g, '""')}"`,
                     `"${r.dateTaken}"`,
-                    `"${r.areaOfUse.replace(/"/g, '""')}"`,
-                    r.initialPayment,
                     r.totalPaid,
-                    r.arrears,
                     `"${r.status}"`
                 ].join(","))
             ];
